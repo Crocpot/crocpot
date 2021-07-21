@@ -21,40 +21,9 @@ const portal = {
             title: 'About',
             children: [
                 { id: 'projectoverview', title: 'Project overview', url: '/about/contributors/' },
-                { id: 'policies', title: 'Policies', url: '/data-access-policies/' },
-                { id: 'news', title: 'News', url: '/search/?type=Page&news=true&status=released' },
-                { id: 'acknowledgements', title: 'Acknowledgements', url: '/acknowledgements/' },
-                { id: 'contact', title: 'Contact', url: '/help/contacts/' },
-            ],
-        },
-        {
-            id: 'data',
-            title: 'Data',
-            children: [
-                { id: 'experiment', title: 'Experiments', url: '/matrix/?type=Experiment' },
                 { id: 'annotations', title: 'Annotations', url: '/matrix/?type=Annotation' },
-                { id: 'embeddings', title: 'Embeddings', url: '/matrix/?type=Embedding' },
-		{ id: 'sep-mm-1' },
-                { id: 'publications', title: 'Publications', url: '/search/?type=Publication' },
-            ],
-        },
-        {
-            id: 'tools',
-            title: 'Tools',
-            children: [
                 { id: 'variant', title: 'Variant Search', url: '/variant-search/' },
-                { id: 'umap', title: 'Single Cell UMAP', url: 'http://www.single-cell.commondiseaseepigenome.org:5005' },
-                { id: 'expression', title: 'Expression Profiles', url: 'https://www.single-cell.commondiseaseepigenome.org/RShiny' },
-                { id: 'expression', title: 'Predict Target Genes', url: 'https://www.crocpot.org' },
-            ],
-        },
-        {
-            id: 'help',
-            title: 'Help',
-            children: [
                 { id: 'gettingstarted', title: 'Getting started', url: '/help/getting-started/' },
-                { id: 'restapi', title: 'REST API', url: '/help/rest-api/' },
-		{ id: 'profiles', title: 'Schema', url: '/profiles/' },
             ],
         },
     ],
