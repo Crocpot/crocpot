@@ -14,7 +14,7 @@ import Home from './home';
 import newsHead from './page';
 
 const portal = {
-    portal_title: 'Diabetes Epigenome Atlas',
+    portal_title: 'CROCPOT',
     global_sections: [
         {
             id: 'about',

@@ -54,22 +54,10 @@ ENCODED_ALLOWED_STATUSES = ['released', 'uploading']
 RESIDENT_REGIONSET_KEY = 'resident_regionsets'  # in regions_es, keeps track of what datsets are resident in one place
 
 ENCODED_REGION_REQUIREMENTS = {
-    #'chromatin state': {
-    #    'output_type': ['semi-automated genome annotation'],
-    #    'file_format': ['bed']
-    #}
-    #'accessible chromatin': {
-    #    'output_type': ['peaks'],
-    #    'file_format': ['bed']
-    #    }
-    #'eQTL': {
-    #    'file_type': ['bed bed3+'],
-    #    'file_format': ['bed']
-    #    }
-    #'target gene predictions': {
-    #    'file_type': ['bed bed3+'],
-    #    'file_format': ['bed']
-    #   }
+    'target gene predictions': {
+        'file_type': ['bed bed3+'],
+        'file_format': ['bed']
+    }
 }
 
 # On local instance, these are the only files that can be downloaded and regionalizable.  Currently only one is!

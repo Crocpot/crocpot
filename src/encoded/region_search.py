@@ -36,13 +36,8 @@ _REGION_FIELDS = [
 ]
 
 _FACETS = [
-    ('assay_term_name', {'title': 'Assay'}),
+    ('annotation_type', {'title': 'Annotation Type'}),
     ('biosample_term_name', {'title': 'Biosample term'}),
-    ('target.label', {'title': 'Target'}),
-    ('replicates.library.biosample.donor.organism.scientific_name', {
-        'title': 'Organism'
-    }),
-    ('organ_slims', {'title': 'Organ'}),
     ('assembly', {'title': 'Genome assembly'}),
     ('files.file_type', {'title': 'Available data'})
 ]
@@ -343,7 +338,7 @@ def region_search(context, request):
     result['notification'] = 'No results found'
 
 
-    # if more than one peak found return the experiments with those peak files
+    # if more than one peak found return the annotation with those peak files
     uuid_count = len(file_uuids)
     if uuid_count > MAX_CLAUSES_FOR_ES:
         log.error("REGION_SEARCH WARNING: region with %d file_uuids is being restricted to %d" % \
@@ -352,7 +347,7 @@ def region_search(context, request):
         uuid_count = len(file_uuids)
 
     if uuid_count:
-        query = get_filtered_query('', [], set(), principals, ['Experiment'])
+        query = get_filtered_query('', [], set(), principals, ['Annotation'])
         del query['query']
         query['post_filter']['bool']['must'].append({
             'terms': {
@@ -361,10 +356,10 @@ def region_search(context, request):
         })
         used_filters = set_filters(request, query, result)
         used_filters['files.uuid'] = file_uuids
-        query['aggs'] = set_facets(_FACETS, used_filters, principals, ['Experiment'])
-        schemas = (types[item_type].schema for item_type in ['Experiment'])
+        query['aggs'] = set_facets(_FACETS, used_filters, principals, ['Annotation'])
+        schemas = (types[item_type].schema for item_type in ['Annotation'])
         es_results = es.search(
-            body=query, index='experiment', doc_type='experiment', size=size, request_timeout=60
+            body=query, index='annotation', doc_type='annotation', size=size, request_timeout=60
         )
         result['@graph'] = list(format_results(request, es_results['hits']['hits']))
         result['total'] = total = es_results['hits']['total']
@@ -374,7 +369,7 @@ def region_search(context, request):
         if result['total'] > 0:
             result['notification'] = 'Success'
             position_for_browser = format_position(result['coordinates'], 200)
-            result.update(search_result_actions(request, ['Experiment'], es_results, position=position_for_browser))
+            result.update(search_result_actions(request, ['Annotation'], es_results, position=position_for_browser))
 
     return result
 
