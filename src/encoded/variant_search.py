@@ -37,9 +37,10 @@ _REGION_FIELDS = [
 
 _FACETS = [
     ('annotation_type', {'title': 'Annotation Type'}),
+    ('portal_tissue', {'title': 'Tissue'}),
     ('biosample_term_name', {'title': 'Biosample term'}),
-    ('assembly', {'title': 'Genome assembly'}),
-    ('files.file_type', {'title': 'Available data'})
+    ('annotation_source', {'title': 'Annotation Source'}),
+    ('annotation_type_category', {'title': 'Underlying Assay'})
 ]
 
 _GENOME_TO_SPECIES = {
@@ -58,8 +59,7 @@ _GENOME_TO_ALIAS = {
 
 
 def includeme(config):
-    config.add_route('region-search', '/region-search{slash:/?}')
-    config.add_route('suggest', '/suggest{slash:/?}')
+    config.add_route('variant-search', '/variant-search{slash:/?}')
     config.scan(__name__)
 
 
@@ -110,21 +110,9 @@ def get_peak_query(start, end, with_inner_hits=False, within_peaks=False):
         '_source': False,
     }
     search_ranges = {
-        'peaks_inside_range': {
-            'start': start,
-            'end': end
-        },
-        'range_inside_peaks': {
-            'start': end,
-            'end': start
-        },
         'peaks_overlap_start_range': {
             'start': start,
             'end': start
-        },
-        'peaks_overlap_end_range': {
-            'start': end,
-            'end': end
         }
     }
     for key, value in search_ranges.items():
@@ -140,7 +128,11 @@ def sanitize_coordinates(term):
     if term.count(':') != 1 or term.count('-') > 1:
         return ('', '', '')
     terms = term.split(':')
-    chromosome = terms[0]
+    chromosome_prefix = terms[0]
+    if chromosome_prefix.startswith('chr'):
+        chromosome = chromosome_prefix
+    else:
+        chromosome = 'chr' + chromosome_prefix
     positions = terms[1].split('-')
     if len(positions) == 1:
         start = end = positions[0].replace(',', '')
@@ -189,7 +181,6 @@ def assembly_mapper(location, species, input_assembly, output_assembly):
         start = data['start']
         end = data['end']
         return(chromosome, start, end)
-
 
 def get_rsid_coordinates(id, assembly):
     species = _GENOME_TO_SPECIES[assembly]
@@ -250,20 +241,21 @@ def format_position(position, resolution):
     end = int(end) + resolution
     return '{}:{}-{}'.format(chromosome, start, end)
 
-@view_config(route_name='region-search', request_method='GET', permission='search')
-def region_search(context, request):
+@view_config(route_name='variant-search', request_method='GET', permission='search')
+def variant_search(context, request):
     """
-    Search files by region.
+    Search files by variant.
     """
     types = request.registry[TYPES]
     result = {
-        '@id': '/region-search/' + ('?' + request.query_string.split('&referrer')[0] if request.query_string else ''),
-        '@type': ['region-search'],
-        'title': 'Search by Region',
+        '@id': '/variant-search/' + ('?' + request.query_string.split('&referrer')[0] if request.query_string else ''),
+        '@type': ['variant-search'],
+        'title': 'Search by Variant',
         'facets': [],
         '@graph': [],
         'regions': [],
         'peaks': [],
+        'viz': OrderedDict(),
         'columns': OrderedDict(),
         'notification': '',
         'filters': [],
@@ -281,14 +273,14 @@ def region_search(context, request):
 
 
     # handling limit
-    size = request.params.get('limit', 25)
+    size = request.params.get('limit', 50)
     if size in ('all', ''):
         size = 99999
     else:
         try:
             size = int(size)
         except ValueError:
-            size = 25
+            size = 50
     if region == '':
         region = '*'
 
@@ -313,6 +305,8 @@ def region_search(context, request):
             chromosome, start, end = sanitize_coordinates(region)
     else:
         chromosome, start, end = ('', '', '')
+    #chromosome_index = chromosome, chromosome.replace('chr', '')
+    result['query'] = region
     # Check if there are valid coordinates
     if not chromosome or not start or not end:
         result['notification'] = 'No annotations found'
@@ -326,10 +320,8 @@ def region_search(context, request):
     try:
         # including inner hits is very slow
         # figure out how to distinguish browser requests from .embed method requests
-        if 'peak_metadata' in request.query_string:
-            peak_query = get_peak_query(start, end, with_inner_hits=True, within_peaks=region_inside_peak_status)
-        else:
-            peak_query = get_peak_query(start, end, within_peaks=region_inside_peak_status)
+        #if 'peak_metadata' in request.query_string:
+        peak_query = get_peak_query(start, end, with_inner_hits=True, within_peaks=region_inside_peak_status)
         peak_results = snp_es.search(body=peak_query,
                                      index=chromosome.lower(),
                                      doc_type=_GENOME_TO_ALIAS[assembly],
@@ -343,9 +335,11 @@ def region_search(context, request):
             file_uuids.append(hit['_id'])
     file_uuids = list(set(file_uuids))
     result['notification'] = 'No results found'
+    result['chromosome'] = chromosome
+    result['start'] = start
+    result['end'] = end
 
-
-    # if more than one peak found return the annotation with those peak files
+    # if more than one peak found return the experiments with those peak files
     uuid_count = len(file_uuids)
     if uuid_count > MAX_CLAUSES_FOR_ES:
         log.error("REGION_SEARCH WARNING: region with %d file_uuids is being restricted to %d" % \
@@ -394,51 +388,10 @@ def region_search(context, request):
                     annotation = annotation_json['annotation_type']
                     biosample_term = annotation_json['biosample_term_name']
                     data_row.update({'annotation_type':annotation, 'biosample_term_name':biosample_term, 'coordinates':coordinates, 'state_annotation':state_annotation, 'value_annotation':value_annotation, '@id':annotation_accession, 'description':description})
-                    rows.append(data_row)        
+                    rows.append(data_row)
         if result['total'] > 0:
             result['notification'] = 'Success'
             position_for_browser = format_position(result['coordinates'], 200)
-            result.update(search_result_actions(request, ['Annotation'], es_results, position=position_for_browser))
+            result.update(search_result_actions(request, ['VariantSearch'], es_results, position=position_for_browser))
 
     return result
-
-
-@view_config(route_name='suggest', request_method='GET', permission='search')
-def suggest(context, request):
-    text = ''
-    requested_genome = ''
-    if 'q' in request.params:
-        text = request.params.get('q', '')
-        requested_genome = request.params.get('genome', '')
-        # print(requested_genome)
-
-    result = {
-        '@id': '/suggest/?' + urlencode({'genome': requested_genome, 'q': text}, ['q', 'genome']),
-        '@type': ['suggest'],
-        'title': 'Suggest',
-        '@graph': [],
-    }
-    es = request.registry[ELASTIC_SEARCH]
-    query = {
-        "suggest": {
-            "default-suggest": {
-                "text": text,
-                "completion": {
-                    "field": "suggest",
-                    "size": 100
-                }
-            }
-        }
-    }
-    try:
-        results = es.search(index='annotations', body=query)
-    except:
-        return result
-    else:
-        result['@id'] = '/suggest/?' + urlencode({'genome': requested_genome, 'q': text}, ['q','genome'])
-        result['@graph'] = []
-        for item in results['suggest']['default-suggest'][0]['options']:
-            if _GENOME_TO_SPECIES[requested_genome].replace('_', ' ') == item['_source']['payload']['species']:
-                result['@graph'].append(item)
-        result['@graph'] = result['@graph'][:10]
-        return result

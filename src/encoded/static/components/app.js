@@ -18,11 +18,13 @@ const portal = {
     global_sections: [
         {
             id: 'about',
-            title: 'About',
+            title: 'Menu',
             children: [
-                { id: 'projectoverview', title: 'Project overview', url: '/about/contributors/' },
-                { id: 'annotations', title: 'Annotations', url: '/matrix/?type=Annotation' },
-                { id: 'variant', title: 'Variant Search', url: '/variant-search/' },
+                { id: 'annotations', title: 'Chromatin Data', url: '/matrix/?type=Annotation' },
+                { id: 'tracks', title: 'Load Tracks', url: 'http://www.tools.cmdga.org/tracks/tracks.html' },
+                { id: 'variant', title: 'Region Search', url: '/region-search/' },
+		{ id: 'pipelines', title: 'Pipelines', url: '/search/?type=Pipeline' },
+                { id: 'publication', title: 'Publications', url: '/search/?type=Publication' },
                 { id: 'gettingstarted', title: 'Getting started', url: '/help/getting-started/' },
             ],
         },

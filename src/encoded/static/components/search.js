@@ -42,6 +42,7 @@ const types = {
 };
 
 const datasetTypes = {
+    Annotation: types.annotation.title,
     Dataset: types.dataset.title,
     MatchedSet: types.matched_set.title,
     OrganismDevelopmentSeries: types.organism_development_series.title,

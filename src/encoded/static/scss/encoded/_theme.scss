@@ -8,81 +8,81 @@
 }
 
 .btn-info {
-    color: #428bca;
+    color: #9f97c9;
     background-color: #fff;
-    border: 1px solid #428bca;
+    border: 1px solid #9f97c9;
 
     .svg-icon {
         path, rect, polygon {
-            fill: #428bca;
+            fill: #9f97c9;
         }
     }
 
     &:active, &:focus {
-        color: darken(#428bca,20%) !important;
+        color: darken(#9f97c9,20%) !important;
         background-color: #fff !important;
-        border: 1px solid #428bca;
+        border: 1px solid #9f97c9;
     }
 
     &.active, &:active.active, .dropdown.open & {
-        color: darken(#428bca,20%) !important;
-        background-color: lighten(#428bca,30%) !important;
-        border: 1px solid #428bca !important;
+        color: darken(#9f97c9,20%) !important;
+        background-color: lighten(#9f97c9,30%) !important;
+        border: 1px solid #9f97c9 !important;
     }
 
     &:hover {
-        color: darken(#428bca,20%);
-        background-color: lighten(#428bca,30%);
-        border: 1px solid #428bca;
+        color: darken(#9f97c9,20%);
+        background-color: lighten(#9f97c9,30%);
+        border: 1px solid #9f97c9;
 
         .svg-icon {
             path {
-                fill: darken(#428bca,20%);
+                fill: darken(#9f97c9,20%);
             }
         }
     }
 
     &[disabled] {
         background-color: #fff;
-        color: lighten(#428bca,20%) !important;
+        color: lighten(#9f97c9,20%) !important;
     }
 }
 .btn-tools {
     color: #fff;
-    background-color: #428bca;
-    border: 1px solid #428bca;
+    background-color: #9f97c9;
+    border: 1px solid #9f97c9;
     .svg-icon {
         path, rect, polygon {
-            fill: #428bca;
+            fill: #9f97c9;
         }
     }
 
     &:active, &:focus {
-        color: darken(#428bca,20%) !important;
-        background-color: #428bca !important;
-        border: 1px solid #428bca;
+        color: darken(#9f97c9,20%) !important;
+        background-color: #9f97c9 !important;
+        border: 1px solid #9f97c9;
     }
 
     &.active, &:active.active, .dropdown.open & {
-        color: darken(#428bca,20%) !important;
-        background-color: lighten(#428bca,30%) !important;
-        border: 1px solid #428bca !important;
+        color: darken(#9f97c9,20%) !important;
+        background-color: lighten(#9f97c9,30%) !important;
+        border: 1px solid #9f97c9 !important;
     }
     &:hover {
-        color: darken(#428bca,20%);
-        background-color: lighten(#428bca,30%);
-        border: 1px solid #428bca;
+        color: darken(#9f97c9,20%);
+        background-color: lighten(#9f97c9,30%);
+        border: 1px solid #9f97c9;
 
         .svg-icon {
             path {
-                fill: darken(#428bca,20%);
+                fill: darken(#9f97c9,20%);
             }
         }
     }
 
     &[disabled] {
-        background-color: #428bca;
-        color: lighten(#428bca,20%) !important;
+        background-color: #9f97c9;
+        color: lighten(#9f97c9,20%) !important;
     }
 }
 .btn-svgicon {
@@ -112,8 +112,8 @@
 }
 
 select {
-    border: 1px solid #428bca !important;
-    color: #428bca !important;
+    border: 1px solid #9f97c9 !important;
+    color: #9f97c9 !important;
     font-weight: bold;
 
     &::-ms-expand {
